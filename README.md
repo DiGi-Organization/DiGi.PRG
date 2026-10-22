@@ -9,9 +9,29 @@ point carries:
 - the house number;
 - the locality (SIMC).
 
-> **Status:** the repository has been set up, but nothing is implemented yet. The work is tracked in this
-> repository's issues. It started as Part B of
+> **Status:** the address-point loader is implemented
+> ([DiGi.PRG#1](https://github.com/DiGi-Organization/DiGi.PRG/issues/1)). The work started as Part B of
 > [DiGi.BDOT10k#2](https://github.com/DiGi-Organization/DiGi.BDOT10k/issues/2).
+
+---
+
+## 📦 Projects
+
+| Project | Holds |
+|---|---|
+| [DiGi.PRG](DiGi.PRG) | GML classes for the `prgad` schema (`PRGAD.xsd`): `AD_Miejscowosc`, `AD_UlicaPlac`, `AD_PunktAdresowy`, `AD_IdentyfikatorIIP`, plus the code lists `AD_RodzajMiejscowosci` and `AD_RodzajObiektu`. Depends on DiGi.GML. |
+| [DiGi.PRG.Geometry](DiGi.PRG.Geometry) | `Create.PunktyAdresowe(path / Stream / FeatureCollection)`, which loads a file into `PunktAdresowy` objects (a `VisualPoint2D` with its locality and street resolved), and `Convert.ToDiGi(Point)`. Depends on DiGi.Core, DiGi.Geometry(.Object, .Visual) and DiGi.GML. |
+
+Things the data does that the code relies on:
+- **The point names its street only by reference.** `ulica2` and `miejscowosc` are `xlink:href="#gml:id"`
+  links to an `AD_UlicaPlac` and an `AD_Miejscowosc` of the same file. `Create.PunktyAdresowe` resolves them.
+  About 28 % of the points have no `ulica2`; they are village addresses, numbered within the locality only.
+- **PRG writes `gml:pos` northing-first** (`srsName="urn:ogc:def:crs:EPSG::2180"`), and BDOT10k writes its
+  coordinates easting-first. `Convert.ToDiGi` swaps the axes, so PRG points share the frame of
+  `DiGi.BDOT10k.Geometry`. A point under any other `srsName` converts to `null`.
+- **The source:** since 10.09.2026, GUGiK publishes the GML only as the national package
+  (`https://opendata.geoportal.gov.pl/prg/adresy/PRG-punkty_adresowe.zip`, one file per voivodeship).
+  The per-county packages are Shapefile.
 
 ---
 
@@ -30,7 +50,6 @@ The right-hand column consumes this library from
 [DiGi.GIS](https://github.com/DiGi-Organization/DiGi.GIS). That is the same split used today, where
 `DiGi.GIS` converts BDOT10k objects into its own domain types.
 
-The planned dependencies are `DiGi.GML`, plus `DiGi.Geometry` for the point conversion.
 
 ---
 
