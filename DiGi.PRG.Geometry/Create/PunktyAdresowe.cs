@@ -23,7 +23,8 @@ namespace DiGi.PRG.Geometry
                 return null;
             }
 
-            return PunktyAdresowe(GML.Convert.ToGML<FeatureCollection>(path)?.FirstOrDefault());
+            // Streamed member by member: the whole-document route (ReadAllText + XmlDocument) runs out of memory on a 0.7 - 1.6 GB voivodeship file.
+            return PunktyAdresowe(new FeatureCollection { featureMember = [.. GML.Query.FeatureMembers(path)] });
         }
 
         /// <summary>
